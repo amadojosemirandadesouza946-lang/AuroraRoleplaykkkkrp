@@ -50,3 +50,13 @@ jobs:
         with:
           name: AuroraRoleplaySAMP-apk
           path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Publish Release on GitHub
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/build/outputs/apk/release/app-release.apk
+          name: "Aurora Roleplay - Latest Build"
+          tag_name: "v1.0.${{ github.run_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
