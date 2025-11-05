@@ -28,7 +28,7 @@ jobs:
           sed -n '1,200p' app/src/main/java/com/aurora/launcher/MainActivity.java || true
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon || echo "⚠️ Gradle build failed - verifique sua configuração"
+        run: ./gradlew assembleRelease --no-daemon || echo "⚠️ Gradle build failed - check configuration"
 
       - name: Load keystore from secret
         if: ${{ secrets.KEYSTORE_BASE64 != '' }}
@@ -42,7 +42,7 @@ jobs:
           if [ -f "$APK_PATH" ]; then
             jarsigner -verbose -keystore aurora-release.keystore -storepass "${{ secrets.STORE_PASS }}" -keypass "${{ secrets.KEY_PASS }}" "$APK_PATH" "${{ secrets.ALIAS }}"
           else
-            echo "❌ APK não encontrado em $APK_PATH"
+            echo "❌ APK not found at $APK_PATH"
           fi
 
       - name: Upload APK artifact
