@@ -25,3 +25,4 @@ O que está incluído:
 ### Nota técnica
 - Este projeto é um esqueleto. Para ter um launcher SAMP totalmente funcional, é necessário integrar o código nativo do cliente SAMP Android (não incluso aqui por compatibilidade/licença).
 - O `MainActivity.java` aqui abre um intento simples `samp://188.165.192.24:5644` ao clicar em "Conectar". Ajuste conforme a integração real do cliente SAMP.
+# Forçar build manual Wed Nov  5 20:03:56 -03 2025
