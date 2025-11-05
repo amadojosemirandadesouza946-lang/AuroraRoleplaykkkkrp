@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,7 +28,7 @@ jobs:
           sed -n '1,200p' app/src/main/java/com/aurora/launcher/MainActivity.java || true
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon || echo "Gradle build failed - ensure project is configured"
+        run: ./gradlew assembleRelease --no-daemon || echo "⚠️ Gradle build failed - verifique sua configuração"
 
       - name: Load keystore from secret
         if: ${{ secrets.KEYSTORE_BASE64 != '' }}
@@ -41,7 +42,7 @@ jobs:
           if [ -f "$APK_PATH" ]; then
             jarsigner -verbose -keystore aurora-release.keystore -storepass "${{ secrets.STORE_PASS }}" -keypass "${{ secrets.KEY_PASS }}" "$APK_PATH" "${{ secrets.ALIAS }}"
           else
-            echo "APK não encontrado em $APK_PATH"
+            echo "❌ APK não encontrado em $APK_PATH"
           fi
 
       - name: Upload APK artifact
