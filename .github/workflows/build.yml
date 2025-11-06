@@ -10,28 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout do código
-        uses: actions/checkout@v4
+      - name: 📦 Clonar repositório
+        uses: actions/checkout@v3
 
-      - name: ☕ Instalar JDK 17
-        uses: actions/setup-java@v4
+      - name: ☕ Configurar Java 17
+        uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      - name: 🔧 Permitir execução do Gradle
-        run: chmod +x ./gradlew
-
-      - name: 🏗️ Construir APK (Release ou Debug)
+      - name: 🧩 Instalar dependências
         run: |
-          ./gradlew clean
-          ./gradlew assembleRelease --stacktrace --no-daemon || ./gradlew assembleDebug --stacktrace --no-daemon
-          echo "📂 Conteúdo do diretório de saída:"
-          ls -R app/build/outputs || echo "❌ Nenhum APK encontrado."
+          chmod +x gradlew
+          ./gradlew dependencies
 
-      - name: 📦 Enviar APK gerado
+      - name: 🏗️ Gerar APK Release
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: 📤 Enviar APK como artefato
         uses: actions/upload-artifact@v4
         with:
-          name: AuroraRoleplaySAMP-APK
-          path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: warn
+          name: AuroraRoleplay-APK
+          path: app/build/outputs/apk/release/app-release.apk
