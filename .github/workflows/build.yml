@@ -1,34 +1,33 @@
-name: Build Aurora Roleplay APK
+name: Build AuroraRoleplay APK
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Clonar repositório
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: ☕ Configurar Java 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-      - name: 🧩 Instalar dependências
-        run: |
-          chmod +x gradlew
-          ./gradlew dependencies
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew || true
 
-      - name: 🏗️ Gerar APK Release
-        run: ./gradlew assembleRelease --stacktrace
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug || ./gradlew build
 
-      - name: 📤 Enviar APK como artefato
-        uses: actions/upload-artifact@v4
-        with:
-          name: AuroraRoleplay-APK
-          path: app/build/outputs/apk/release/app-release.apk
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: AuroraRoleplay-APK
+        path: app/build/outputs/apk/debug/*.apk
