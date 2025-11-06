@@ -35,7 +35,7 @@ jobs:
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
           chmod +x gradlew
-          ./gradlew clean assembleRelease --no-daemon --stacktrace -x lintVitalReportRelease --no-daemon --stacktrace -x lintVitalReportRelease --stacktrace
+          ./gradlew clean assembleRelease --no-daemon --stacktrace -x --no-daemon --stacktrace -x --stacktrace
 
       - name: 🔐 Assinar APK
         if: success()
