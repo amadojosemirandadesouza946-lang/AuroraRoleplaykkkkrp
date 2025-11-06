@@ -26,6 +26,8 @@ jobs:
       - name: 🏗️ Criar APK (release ou debug)
         run: |
           ./gradlew assembleRelease || ./gradlew assembleDebug
+          echo "📂 Listando APKs gerados:"
+          find app/build/outputs/apk -name "*.apk" || echo "❌ Nenhum APK encontrado"
 
       - name: 🔑 Decodificar keystore (se existir)
         if: env.KEYSTORE_BASE64 != ''
@@ -44,3 +46,4 @@ jobs:
         with:
           name: AuroraRoleplaySAMP-APK
           path: app/build/outputs/apk/**/app-*.apk
+          if-no-files-found: ignore
