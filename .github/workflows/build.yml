@@ -1,9 +1,8 @@
-name: Build AuroraRoleplay APK
+name: 🏗️ Corrigir erro e criar APK
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
   build:
@@ -11,48 +10,33 @@ jobs:
 
     steps:
       - name: 📦 Clonar código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: ☕ Configurar JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: 17
-
-      - name: 🧰 Instalar Android SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O sdk-tools.zip
-          unzip -q sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
-          mkdir -p $HOME/android-sdk/cmdline-tools/latest
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest/
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;33.0.1" "platforms;android-34"
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: 🏗️ Construir APK
         run: |
           export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-          chmod +x gradlew
-          ./gradlew clean assembleRelease --no-daemon --stacktrace -x --no-daemon --stacktrace -x --stacktrace
+          chmod +x gradlew || true
+          ./gradlew assembleRelease --no-daemon || gradle assembleRelease --no-daemon
 
       - name: 🔐 Assinar APK
         if: success()
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > aurora-release.keystore
-          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          cp "$RELEASE_APK" app-release-unsigned.apk
-          $HOME/android-sdk/build-tools/33.0.1/apksigner sign \
-            --ks aurora-release.keystore \
-            --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
-            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
-            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
-            --out app-release-signed.apk \
-            app-release-unsigned.apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - name: 📤 Fazer upload do APK assinado
-        uses: actions/upload-artifact@v4
+      - name: ☁️ Enviar APK assinado
+        if: success()
+        uses: actions/upload-artifact@v3
         with:
           name: AuroraRoleplay-APK
-          path: app-release-signed.apk
+          path: app/build/outputs/apk/release/app-release.apk
